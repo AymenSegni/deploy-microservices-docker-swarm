@@ -32,7 +32,6 @@ Checking:
     - export DOCKER_HOST=$DOCKER_HOST_VAR
     - echo using DOCKER_HOST=$DOCKER_HOST
     - docker info
-
 Build & Push to Registry:
  stage: build
  variables:
