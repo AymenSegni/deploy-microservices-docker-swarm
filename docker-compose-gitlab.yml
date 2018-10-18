@@ -2,7 +2,7 @@ version: "3"
 services:
   countrie:
     build: ./docker/countries_101/
-    image: ${REGISTRY_SLASH-sebmoule/}countrie_countrie${COLON_TAG-:latest}
+    image: ${REGISTRY_SLASH-sebmoule/}demo_countrie${COLON_TAG-:latest}
     deploy:
       replicas: 1
       update_config:
@@ -20,7 +20,7 @@ services:
 
   airport:
     build: ./docker/airports_101/
-    image: ${REGISTRY_SLASH-sebmoule/}airport_airport${COLON_TAG-:latest}
+    image: ${REGISTRY_SLASH-sebmoule/}demo_airport${COLON_TAG-:latest}
     deploy:
       replicas: 1
       update_config:
