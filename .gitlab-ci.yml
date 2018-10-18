@@ -4,6 +4,8 @@
 #   2- buid : Create the Docker Stack using Docker-Compose and Traefik
 #   3- deploy: Deploy the Stack to Docker-Swarm Cluster
 
+image:
+ - docker:latest
 
 stages:
  - init
