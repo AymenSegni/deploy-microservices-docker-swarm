@@ -1,0 +1,32 @@
+version: '3'
+
+services:
+  reverse-proxy:
+    image: traefik
+    #command: --api --docker
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./traefik.toml:/traefik.toml
+    ports:
+      - 8000:8000
+  nginx:
+    image: nginx
+    labels:
+        - "traefik.frontend.rule=Host:nginx.localhost"
+        - "traefik.port=8000"
+
+  countries_101:
+    build:
+     context: ./docker/countries_101
+    image: countries_101
+    labels:
+        - "traefik.frontend.rule=Host:countries.localhost"
+        - "traefik.port=8000"
+  airports_101:
+    build:
+      context: ./docker/airports_101
+    image: airports_101
+    labels:
+        - "traefik.frontend.rule=Host:aireports.localhost"
+        - "traefik.port=8000"
+
