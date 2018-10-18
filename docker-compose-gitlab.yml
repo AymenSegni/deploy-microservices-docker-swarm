@@ -1,0 +1,42 @@
+version: "3"
+services:
+  countrie:
+    build: ./docker/countries_101/
+    image: ${REGISTRY_SLASH-sebmoule/}countrie_countrie${COLON_TAG-:latest}
+    deploy:
+      replicas: 1
+      update_config:
+        parallelism: 2
+      restart_policy:
+        condition: on-failure
+      labels:
+        - "traefik.backend="
+        - "traefik.port=80"
+        - "traefik.frontend.rule=PathPrefixStrip:/countrie"
+        - "traefik.docker.network=traefik_net"   
+    networks:
+     - traefik_net
+     - private       
+
+  airport:
+    build: ./docker/airports_101/
+    image: ${REGISTRY_SLASH-sebmoule/}airport_airport${COLON_TAG-:latest}
+    deploy:
+      replicas: 1
+      update_config:
+        parallelism: 2
+        delay: 10s
+      restart_policy:
+        condition: on-failure
+      labels:
+        - "traefik.backend=result"
+        - "traefik.port=80"
+        - "traefik.frontend.rule=PathPrefixStrip:/airport"
+        - "traefik.docker.network=traefik_net"   
+    networks:
+     - traefik_net
+     - private       
+networks:
+  private:
+  traefik_net:
+    external: true
