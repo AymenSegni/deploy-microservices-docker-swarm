@@ -1,7 +1,8 @@
-# Micro-services stack Docker Swarm deployment 
+# Auto-deploy micro-services stack with a reverse-proxy in Docker Swarm Cluster using CI/CD pipeline
 
 ## Description
-Sample CI/CD platform to automate the deployment of Java Micro-services using Docker CE, Docker Compose, Docker Swarm, the reverse-proxy Traefik and GitLab CI  pipelines  .
+Sample CI/CD platform to automate the deployment of Java based micro-services using Docker CE,
+Docker Compose, Docker Swarm, the reverse-proxy Traefik and GitLab CI  pipelines  .
 
 
 ## Requirements:
