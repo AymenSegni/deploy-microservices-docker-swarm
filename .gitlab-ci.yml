@@ -10,7 +10,7 @@ stages:
  - build
  - deploy
  
-init-swarm 
+init-swarm:
  stage: init
  script:
  - docker swarm init
