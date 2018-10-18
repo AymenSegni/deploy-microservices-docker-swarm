@@ -1,0 +1,60 @@
+version: "3"
+services:
+  airport:
+    build: ./docker/airports_101/
+    image: ${REGISTRY_SLASH-sebmoule/}demo_airport${COLON_TAG-:latest}
+    deploy:
+      replicas: 2
+      update_config:
+        parallelism: 2
+      restart_policy:
+        condition: on-failure
+      labels:
+        - "traefik.backend=airport"
+        - "traefik.port=80"
+        - "traefik.frontend.rule=PathPrefixStrip:/airport"
+        - "traefik.docker.network=traefik_net"   
+    networks:
+     - traefik_net
+     - private       
+
+  countrie:
+    build: ./docker/countries_101/
+    image: ${REGISTRY_SLASH-sebmoule/}demo_countrie${COLON_TAG-:latest}
+    deploy:
+      replicas: 1
+      update_config:
+        parallelism: 2
+        delay: 10s
+      restart_policy:
+        condition: on-failure
+      labels:
+        - "traefik.backend=result"
+        - "traefik.port=80"
+        - "traefik.frontend.rule=PathPrefixStrip:/countrie"
+        - "traefik.docker.network=traefik_net"   
+    networks:
+     - traefik_net
+     - private       
+
+  visualizer:
+    image: dockersamples/visualizer:stable
+    stop_grace_period: 1m30s
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+    deploy:
+      placement:
+        constraints: [node.role == manager]
+      labels:
+        - "traefik.backend=visualizer"
+        - "traefik.port=8080"
+        - "traefik.frontend.rule=PathPrefixStrip:/"
+        - "traefik.docker.network=traefik_net"   
+    networks:
+     - traefik_net
+
+networks:
+  private:
+  traefik_net:
+    external: true
+
