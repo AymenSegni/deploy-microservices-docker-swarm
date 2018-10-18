@@ -1,28 +1,87 @@
-# Deploy a stack of Java micro-services to a swarm cluster
-# 3 stages: 
-#   1- init : Initiate the Docker Swarm Cluster and create a Docker Registry service
-#   2- buid : Create the Docker Stack using Docker-Compose and Traefik
-#   3- deploy: Deploy the Stack to Docker-Swarm Cluster
+######## Deploy a stack of Java micro-services to a swarm cluster ##############
+# 4 stages:                                                                    #
+#   1- Checking: Set Docker enviroment                                         #
+#   2- Buid & Push : Create the Docker Stack & push images to Docker Registery #
+#   3- Test: Deploy the Stack to Docker-Swarm Cluster and test it locally      #
+#   4- Deploy: Deploy demo Stack to Swarm cluster and start it                 #
+################################################################################
+# When using dind, it's wise to use the overlayfs driver for
+# improved performance.
+variables:
+  DOCKER_DRIVER: overlay
+  REGISTRY_SLASH: "$CI_REGISTRY_IMAGE/"
+  COLON_TAG: ":1.0.0"
+  
+image: registry.gitlab.com/build-images/docker:latest
+
+services:
+  - docker:dind
 
 stages:
- - init
+ - check
  - build
+ - test
  - deploy
  
-init-swarm:
- stage: init
+variables:
+  dockerfile_dir: "$CI_PROJECT_DIR"
+
+Checking:
+ stage: check
  script:
- - docker swarm init
- - docker service create --name registry --publish published=5000,target=5000 registry:2
- 
-build:
+    - export DOCKER_HOST=$DOCKER_HOST_VAR
+    - echo using DOCKER_HOST=$DOCKER_HOST
+    - docker info
+
+Build & Push to Registry:
  stage: build
  script:
- - cd /docker && docker-compose up -d
- - cd /docker && docker-compose down --volume
- - cd /docker && docker-compose push
- 
-deploy-containers:
- stage: deploy
- script:
- - cd docker/ && docker stack deploy --compose-file docker-compose.yml stackdemo
+ variables:
+    REGISTRY_SLASH: "$CI_REGISTRY_IMAGE/"
+    COLON_TAG: ":1.0.0"    
+  script:
+    - echo "Using gitlab registry $REGISTRY_SLASH and $COLON_TAG"
+    - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN $REGISTRY_SLASH        
+    #At this time gitlab.com shared runner segfault when building application
+    #(maybe not enough memory.) so I don't build it here..
+    - docker-compose -f docker-compose-gitlab.yml build
+    - docker-compose -f docker-compose-gitlab.yml push    
+  except:
+    - tags
+
+Pull & deploy & test locally:
+  stage: test
+  variables:
+    REGISTRY_SLASH: "$CI_REGISTRY_IMAGE/"
+    COLON_TAG: ":1.0.0"      
+  script:
+    - echo "Using gitlab registry $REGISTRY_SLASH and $COLON_TAG"
+    - docker version
+    - docker swarm init || true # if already a swarm
+    - docker ps -a
+    - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN $REGISTRY_SLASH    
+    - docker swarm init --advertise-addr eth0 || true
+    - docker stack deploy -c traefik.yml traefik
+    - docker-compose -f docker-stack-traefik.yml pull
+    - docker stack deploy demo -c docker-stack-traefik.yml
+    - docker stack rm demo
+  except:
+    - tags
+
+Deploy to Swarm:
+  stage: deploy
+  variables:
+    REGISTRY_SLASH: "$CI_REGISTRY_IMAGE/"
+    COLON_TAG: ":1.0.0"        
+  before_script:
+    - export SHELL=/bin/bash
+    - echo "Creation of Docker Swarm on PWD"
+    #You need to set-up DOCKER_HOST_VAR in the Settings of your Gitlab Pipeline in secret variable
+    - export DOCKER_HOST=$DOCKER_HOST_VAR
+    - echo using DOCKER_HOST=$DOCKER_HOST
+    - docker swarm init --advertise-addr eth0 || true
+    - docker stack deploy -c traefik.yml traefik
+    - docker stack ls
+  script:
+    - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN $REGISTRY_SLASH        
+    - docker stack deploy demo --with-registry-auth -c docker-stack-traefik.yml
