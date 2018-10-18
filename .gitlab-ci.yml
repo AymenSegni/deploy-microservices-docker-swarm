@@ -35,7 +35,6 @@ Checking:
 
 Build & Push to Registry:
  stage: build
- script:
  variables:
     REGISTRY_SLASH: "$CI_REGISTRY_IMAGE/"
     COLON_TAG: ":1.0.0"    
