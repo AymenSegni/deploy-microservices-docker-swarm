@@ -11,7 +11,7 @@ To deploy our application on a [Docker Swarm
 Mode](https://docs.docker.com/engine/swarm/) cluster, we will make use of
 [Docker overlay
 network](https://docs.docker.com/engine/userguide/networking/get-started-overlay/#overlay-networking$
-and create a `public` . Our application will have 2
+and create a `public network` . Our application will have 2
 frontend services that must be exposes on the Internet, so we set-up a double
 network attachment on public network. The
 [Traefik](https://traefik.io/) Reverse Proxy role is to dispatch our requests
