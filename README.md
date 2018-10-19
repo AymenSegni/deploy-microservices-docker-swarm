@@ -7,7 +7,7 @@ automatically deploy an application on a docker Swarm cluster for the airports v
 
 ## What
 
-Since we deploy our application on a [Docker Swarm
+To deploy our application on a [Docker Swarm
 Mode](https://docs.docker.com/engine/swarm/) cluster, we will make use of
 [Docker overlay
 network](https://docs.docker.com/engine/userguide/networking/get-started-overlay/#overlay-networking$
