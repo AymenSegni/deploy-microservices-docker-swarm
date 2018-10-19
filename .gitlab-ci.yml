@@ -6,7 +6,6 @@
 #   4- Deploy: Deploy demo Stack to Swarm cluster and start it                 #
 ################################################################################
 # When using dind, it's wise to use the overlayfs driver for
-# improved performance.
 variables:
   DOCKER_DRIVER: overlay
   REGISTRY_SLASH: "$CI_REGISTRY_IMAGE/"
