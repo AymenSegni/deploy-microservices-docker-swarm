@@ -1,4 +1,0 @@
-# traefik.toml
-[entryPoints]
-  [entryPoints.http]
-  address = ":8000"
