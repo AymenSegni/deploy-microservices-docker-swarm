@@ -27,7 +27,7 @@ This microservices application can be describe as :
     - a **countries** **Java** web-app, which lets you display a list of countries by reference name
     - a **airports** **Java** web-app which shows the list of airports.
 
-![Application architecture](docs/img/gitlab_vote_traefik_archi.png)
+![Application architecture](architecture.png)
 
 ## How
 
