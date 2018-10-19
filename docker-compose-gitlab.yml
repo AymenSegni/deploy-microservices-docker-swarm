@@ -10,13 +10,11 @@ services:
       restart_policy:
         condition: on-failure
       labels:
-        - "traefik.backend="
         - "traefik.port=80"
         - "traefik.frontend.rule=PathPrefixStrip:/countrie"
         - "traefik.docker.network=traefik_net"   
     networks:
      - traefik_net
-     - private       
 
   airport:
     build: ./docker/airports_101/
@@ -29,14 +27,11 @@ services:
       restart_policy:
         condition: on-failure
       labels:
-        - "traefik.backend=result"
         - "traefik.port=80"
         - "traefik.frontend.rule=PathPrefixStrip:/airport"
         - "traefik.docker.network=traefik_net"   
     networks:
      - traefik_net
-     - private       
 networks:
-  private:
   traefik_net:
     external: true
