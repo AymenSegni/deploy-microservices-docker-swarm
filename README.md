@@ -26,6 +26,10 @@ This microservices application can be describe as :
       backend services:
     - a **countries** **Java** web-app, which lets you display a list of countries by reference name
     - a **airports** **Java** web-app which shows the list of airports.
+- A Docker Swarm **private network** name `private` which links our frontend to
+our backend micro services :
+
+
 
 ![Application architecture](architecture.png)
 
